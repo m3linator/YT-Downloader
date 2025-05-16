@@ -5,8 +5,11 @@ from yt_dlp import YoutubeDL
 
 
 def mp3_downloader(url):
+    """Die Funktion erhällt einen YouTube link.
+       Dieser Link wird danach als Audio also .mp3 Datei heruntergeladen
+       und im Downloads-Ordner gespeichert"""
 
-    speicherort = '/Users/melih/Documents/Privat/Video-Downloads-PY'
+    speicherort = ''
 
     ydl_opts = {
         'outtmpl': f'{speicherort}/%(title)s.%(ext)s',

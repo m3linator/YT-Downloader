@@ -3,6 +3,9 @@ import ffmpeg
 from yt_dlp import YoutubeDL
 
 def vid_download(url):
+    """Die Funktion erhällt einen YouTube link.
+       Dieser Link wird danach als Video also .mp4 Datei heruntergeladen
+       und im Ordner '/Users/melih/Documents/Privat/Video-Downloads-PY' gespeichert"""
 
     speicherort = '/Users/melih/Documents/Privat/Video-Downloads-PY'       #gibt speicherort vor
 
