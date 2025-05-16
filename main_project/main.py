@@ -1,5 +1,5 @@
 import pytube
-from pytube import YouTube
+
 
 def downloader():
     """User gibt YT URL ein und kann dann das Video downloaden"""
