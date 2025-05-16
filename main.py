@@ -1,6 +1,4 @@
-import main_project
-from main_project.downloader import vid_download
-
+from downloader.mp4_downloader import vid_download
 
 def main():
 
