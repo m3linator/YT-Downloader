@@ -7,6 +7,10 @@
 # ffmpeg extension 
 ffmpeg-7.1.1/
 
+# Ordner der .exe -Datei
+dist/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
