@@ -7,7 +7,7 @@ def vid_download(url):
        Dieser Link wird danach als Video also .mp4 Datei heruntergeladen
        und im Downloads-Ordner gespeichert"""
 
-    speicherort = ''       #gibt Speicherort vor
+    speicherort = r'C:\Users\ferba\Downloads'       #gibt Speicherort in Windows vor
 
     ydl_opts = {
         'outtmpl': f'{speicherort}/%(title)s.%(ext)s',      #Name von gespeichertem Video
