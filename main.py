@@ -6,7 +6,7 @@ def main():
 
     link = input("Gib die URL von dem YT-Video an: \n")
     vid_download(link)
-    print("Dein Video wurde erfolgreich heruntergeladen!")
+    print("\n Dein Video wurde erfolgreich heruntergeladen!")
 
 if __name__ == "__main__":
     main()
