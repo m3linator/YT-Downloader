@@ -5,5 +5,8 @@ Ein Programm mit dem man Videos von YouTube herunterladen kann
 ffmpeg muss heruntergeladen werden!
 
 Download auf MacOS:
-Code: brew install ffmpeg
+````
 
+brew install ffmpeg
+
+````
