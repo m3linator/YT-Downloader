@@ -1,6 +1,9 @@
 # Ordnerverzeichnis von macOS
 .DS_Store
 
+# exe-Dateien
+*.spec
+
 # JetBrains IDEs
 .idea/
 
