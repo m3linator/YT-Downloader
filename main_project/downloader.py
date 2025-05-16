@@ -1,4 +1,5 @@
 import os
+import ffmpeg
 from yt_dlp import YoutubeDL
 
 def vid_download(url):
