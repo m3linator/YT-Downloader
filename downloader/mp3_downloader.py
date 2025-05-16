@@ -4,7 +4,7 @@ from yt_dlp import YoutubeDL
 
 
 
-def lade_mp3(url, zielverzeichnis="."):
+def mp3_downloader(url):
 
     speicherort = '/Users/melih/Documents/Privat/Video-Downloads-PY'
 
