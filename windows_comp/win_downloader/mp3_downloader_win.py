@@ -9,7 +9,8 @@ def mp3_downloader(url):
        Dieser Link wird danach als Audio also .mp3 Datei heruntergeladen
        und im Downloads-Ordner gespeichert"""
 
-    speicherort = r'C:\Users\ferba\Downloads'  # gibt Speicherort in Windows vor
+    #speicherort = r'C:\Users\ferba\Downloads'  # gibt Speicherort in Windows vor
+    speicherort = r'C:\Users\Melih\Documents'
 
     ydl_opts = {
         'outtmpl': f'{speicherort}/%(title)s.%(ext)s',
