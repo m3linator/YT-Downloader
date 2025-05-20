@@ -1,5 +1,5 @@
-from downloader.mp4_downloader import vid_download
-from downloader.mp3_downloader import mp3_downloader
+from win_downloader.mp3_downloader_win import mp3_downloader
+from win_downloader.mp4_downloader_win import vid_download 
 from numpy import array
 
 
