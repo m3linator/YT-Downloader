@@ -1,7 +1,7 @@
 # YT-Downloader
 Ein Programm mit dem man Videos von YouTube herunterladen kann 
 
-Das Programm ist bereits fertig gebaut und kann im Ordner 'Programme/' heruntergeladen werden. \n 
+Das Programm ist bereits fertig gebaut und kann im Ordner 'Programme/' heruntergeladen werden.  
 *main* ist kompatibel mit macOS und *main_win.exe* mit Windows
 
 ## Weitere Beschreibung:
@@ -19,13 +19,6 @@ Auf macOS musst du ein neues Terminal-Fenster öffnen und in den Pfad navigieren
 
 
 ## Anforderungen um Programm selber zu bauen
-* ffmpeg muss heruntergeladen werden!
-* test
-* test
-* test
-* test
-* 122 \n hallo
-
 
 weitere Anforderungen:
 ...
@@ -35,17 +28,13 @@ weitere Anforderungen:
 
 Download auf MacOS:
 ````
-
 brew install ffmpeg
-
 ````
+
 
 Um die Datei zu bauen:
 ````
-
 pyinstaller -F --console main.py
-
-
 ````
 
 
