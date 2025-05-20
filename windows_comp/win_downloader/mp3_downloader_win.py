@@ -1,5 +1,4 @@
 import os
-import ffmpeg
 from yt_dlp import YoutubeDL
 from pathlib import Path
 

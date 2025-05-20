@@ -1,6 +1,6 @@
 from win_downloader.mp3_downloader_win import mp3_downloader
 from win_downloader.mp4_downloader_win import vid_download 
-from numpy import array
+#from numpy import array
 
 
 audio = ["mp3", "sound", "audio", "stimme"]
