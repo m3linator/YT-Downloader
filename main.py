@@ -21,7 +21,7 @@ def main():
         return
 
     print("\n Dein Video wurde erfolgreich heruntergeladen!")
-    print(" Du findest es bei /Documents/Privat/Video-Downloads-PY")
+    print(" Du findest es im Download-Ordner")
 
 
 

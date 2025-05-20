@@ -1,6 +1,9 @@
 # Ordnerverzeichnis von macOS
 .DS_Store
 
+#  Windows-Comp
+windows_comp/
+
 # exe-Dateien
 *.spec
 
