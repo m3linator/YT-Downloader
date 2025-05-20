@@ -6,7 +6,7 @@ Das Programm ist bereits fertig gebaut und kann im Ordner 'Programme/' herunterg
 
 ## Weitere Beschreibung:
 
-Wenn man das Programm starte, wird einem die Auswahl zwischen mp3 und mp4 angeboten. Durch simples Eingeben wird die Auswahl gespeichert. Begriffe wie *sound, audio, stimme, video und film* werden ebenfalls akzeptiert. 
+Wenn man das Programm starte, wird einem die Auswahl zwischen mp3 und mp4 angeboten. Durch simples Eingeben wird die Auswahl gespeichert. Begriffe wie *Sound, Audio, Stimme, Video und Film* werden ebenfalls akzeptiert. 
 Danach muss man nur noch den Link vom gewünschten YouTube-Video einfügen und der Download beginnt.
 
 ### Wie starte ich das Programm?
@@ -20,16 +20,33 @@ Auf macOS musst du ein neues Terminal-Fenster öffnen und in den Pfad navigieren
 
 ## Anforderungen um Programm selber zu bauen
 
-weitere Anforderungen:
-...
-...
-...
+Damit man das Programm ausführen kann, wenn man es selber bauen möchte (also nicht die fertige exe verwenden möchte),  
+muss man einige Module herunterladen.  
+Diese sind: 
+* numpy
+* yt-dlp
+* ffmpeg
 
+*NumPy* und *yt-dlp* können ganz einfach mit pip installiert werden:
+````
+pip install numpy yt-dlp
+````
+Falls das nicht funktioniert, versuche:
+````
+python3 -m pip install numpy yt-dlp
+````
 
-Download auf MacOS:
+### ffmpeg Download   
+
+Wenn diese beiden Module installiert sind, fehlt nur noch ffmpeg. Auf macOS ist der Download ziemlich einfach. 
+Gehe dazu ins Terminal und gebe folgenden Befehl ein  
 ````
 brew install ffmpeg
 ````
+
+Aus Windows ist der Download etwas umständlicher
+
+
 
 
 Um die Datei zu bauen:
