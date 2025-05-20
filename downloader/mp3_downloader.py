@@ -1,7 +1,7 @@
 import os
 import ffmpeg
 from yt_dlp import YoutubeDL
-
+from pathlib import Path
 
 
 def mp3_downloader(url):
@@ -9,7 +9,7 @@ def mp3_downloader(url):
        Dieser Link wird danach als Audio also .mp3 Datei heruntergeladen
        und im Ordner '/Users/melih/Documents/Privat/Video-Downloads-PY' gespeichert"""
 
-    speicherort = '/Users/melih/Documents/Privat/Video-Downloads-PY'
+    speicherort  = Path.home() / "Downloads"    # gibt Downloadsordner als Speicherort vor
 
     ydl_opts = {
         'outtmpl': f'{speicherort}/%(title)s.%(ext)s',
