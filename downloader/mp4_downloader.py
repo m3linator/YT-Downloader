@@ -6,7 +6,7 @@ from pathlib import Path
 def vid_download(url):
     """Die Funktion erhällt einen YouTube link.
        Dieser Link wird danach als Video also .mp4 Datei heruntergeladen
-       und im Ordner '/Users/melih/Documents/Privat/Video-Downloads-PY' gespeichert"""
+       und im Download-Ordner gespeichert"""
 
     speicherort = Path.home() / "Downloads"  #gibt Downloadordner als Speicherort vor
 
