@@ -4,9 +4,14 @@ from yt_dlp import YoutubeDL
 from pathlib import Path
 
 def vid_download(url):
-    """Die Funktion erhällt einen YouTube link.
-       Dieser Link wird danach als Video also .mp4 Datei heruntergeladen
-       und im Download-Ordner gespeichert"""
+    """
+        Lädt Video von der YT url herunter
+
+	    Die Funktion erhällt einen YouTube link.
+        Dieser Link wird danach als Video also .mp4 Datei heruntergeladen
+        und im Download-Ordner gespeichert
+
+        """
 
     speicherort = Path.home() / "Downloads"  #gibt Downloadordner als Speicherort vor
 

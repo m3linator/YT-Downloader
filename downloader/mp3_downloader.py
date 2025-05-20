@@ -6,9 +6,14 @@ from yt_dlp import YoutubeDL
 
 
 def mp3_downloader(url):
-    """Die Funktion erhällt einen YouTube link.
-    Dieser Link wird danach als Audio also .mp3 Datei heruntergeladen
-    und im Download-Ordner gespeichert"""
+    """
+        Lädt nur Audio von YT url herunter
+
+        Die Funktion erhällt einen YouTube link.
+        Dieser Link wird danach als Audio also .mp3 Datei heruntergeladen
+        und im Download-Ordner gespeichert
+
+        """
 
     speicherort = Path.home() / "Downloads"  # gibt Downloadsordner als Speicherort vor
 
