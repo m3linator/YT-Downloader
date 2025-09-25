@@ -1,6 +1,10 @@
 # Ordnerverzeichnis von macOS
 .DS_Store
 
+#Bilder
+*.png
+
+
 #  Windows-Comp
 windows_comp/
 
