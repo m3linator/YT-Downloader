@@ -77,7 +77,5 @@ pyinstaller -F --console main.py
 
 
 
-Ich hoffe das Programm hilft dir die ganzen mp3/mp4 Downloader mit den ganzen Werbungen und Pop-ups zu umgehen.
-
 Autor:
 Melih Erbas
