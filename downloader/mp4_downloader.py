@@ -1,26 +1,32 @@
-import os
-import ffmpeg
 from yt_dlp import YoutubeDL
-from pathlib import Path
+
+from .utils import CleanTitlePP, base_ydl_opts
+
 
 def vid_download(url):
     """
-        Lädt Video von der YT url herunter
+    Lädt ein YouTube-Video als .mp4 herunter.
 
-	    Die Funktion erhällt einen YouTube link.
-        Dieser Link wird danach als Video also .mp4 Datei heruntergeladen
-        und im Download-Ordner gespeichert
+    Funktioniert sowohl für einzelne Videos als auch für komplette
+    Playlists. Bei Playlists werden die Dateien in der YouTube-Reihenfolge
+    nummeriert ("01 - <Titel>.mp4", "02 - ..." etc.). Nicht mehr verfügbare
+    Videos einer Playlist werden übersprungen, ohne dass der Vorgang
+    abbricht. Altersbeschränkte Videos werden ohne Login heruntergeladen.
 
-        """
+    Künstler-Präfixe und Tags wie "Official Video", "HD" usw. werden aus
+    dem Dateinamen entfernt; "(feat. ...)"-Zusätze werden bei Videos
+    ebenfalls entfernt (für Songs siehe ``mp3_downloader``).
+    """
 
-    speicherort = Path.home() / "Downloads"  #gibt Downloadordner als Speicherort vor
-
-    ydl_opts = {
-        'outtmpl': f'{speicherort}/%(title)s.%(ext)s',      #Name von gespeichertem Video
-        'format': 'bestvideo+bestaudio/best',
-        'merge_output_format': 'mp4'
-    }
+    ydl_opts = base_ydl_opts()
+    ydl_opts.update(
+        {
+            "format": "bestvideo+bestaudio/best",
+            "merge_output_format": "mp4",
+        }
+    )
 
     with YoutubeDL(ydl_opts) as ydl:
-        info = ydl.download([url])
-
+        # Postprocessor zum Säubern des Titels VOR der Dateinamenserzeugung.
+        ydl.add_post_processor(CleanTitlePP(keep_features=False), when="pre_process")
+        ydl.download([url])
