@@ -1,81 +1,116 @@
 # YT-Downloader
-Ein Programm mit dem man Videos von YouTube herunterladen kann 
+Ein Programm, mit dem man Videos und Audios von YouTube herunterladen kann.
 
-Das Programm ist bereits fertig gebaut und kann im Ordner 'Programme/' heruntergeladen werden.  
+Das Programm ist bereits fertig gebaut und kann im Ordner `Programme/` heruntergeladen werden.
 *main* ist kompatibel mit macOS und Linux und *main_win.exe* mit Windows.
 
 
-## Weitere Beschreibung:
+## Was das Programm kann
 
-Wenn man das Programm startet, wird einem die Auswahl zwischen mp3 und mp4 angeboten. Durch simples eingeben wird die Auswahl gespeichert. Begriffe wie *Sound, Audio, Stimme, Video und Film* werden ebenfalls akzeptiert. 
+Wenn man das Programm startet, wird einem die Auswahl zwischen mp3 und mp4 angeboten. Durch simples Eingeben wird die Auswahl gespeichert. Begriffe wie *Sound, Audio, Stimme, Video und Film* werden ebenfalls akzeptiert.
 Danach muss man nur noch den Link vom gewünschten YouTube-Video einfügen und der Download beginnt.
-Ganze YouTube-Playlists können ebenfalls heruntergeladen werden. Dafür muss man den Link beim ersten Video der Playlist kopieren. D.h. wenn man nicht beim ersten Video der Playlist ist, wird nur das jeweilige Video heruntergeladen, anstatt der gesamten Playlist.
+
+Zusätzliche Features:
+
+* **Playlists werden in Reihenfolge nummeriert.** Hängt man einen Playlist-Link rein, werden die Dateien in der exakten YouTube-Reihenfolge mit zweistelligem Präfix benannt, z. B. `01 - <Titel>.mp3`, `02 - <Titel>.mp3` ...
+* **Altersbeschränkte / „explizite" Videos** (z. B. einige Rap-Songs) werden ohne Login heruntergeladen.
+* **Saubere Dateinamen.** Künstler-Präfixe und Tags wie *Official Audio*, *Official Video*, *HD*, *Lyrics Video* etc. werden automatisch aus dem Dateinamen entfernt. Bei mp3-Downloads bleibt ein eventuelles `(feat. ...)` erhalten.
+* **Robust gegen tote Videos.** Nicht mehr verfügbare oder regional gesperrte Videos einer Playlist werden stillschweigend übersprungen, sodass der Download nicht abbricht.
+
+Alle Dateien landen im Standard-Downloads-Ordner deines Benutzers.
 
 
+## Anforderungen
 
-### Anforderungen für das Programm
+Es wird nur ein Modul + `ffmpeg` benötigt:
 
-Um das Programm zu starten, muss man drei Module herunterladen.
-* numpy
-* yt-dlp
-* ffmpeg
+* `yt-dlp`
+* `ffmpeg`
 
-Wenn man diese bereits heruntergeladen hat, kann man das Programm ganz einfach wie unten beschrieben starten.
+Installation von `yt-dlp` (Win/Mac/Linux):
+```
+pip install -r requirements.txt
+```
+oder direkt:
+```
+pip install yt-dlp
+```
+Falls das nicht funktioniert:
+```
+python3 -m pip install yt-dlp
+```
 
-Wenn nicht, muss man diese erstmal herunterladen.
+### ffmpeg Download
 
-
-
-*NumPy* und *yt-dlp* können ganz einfach mit pip installiert werden (Win/Mac/Linux):
-````
-pip install numpy yt-dlp
-````
-Falls das nicht funktioniert, versuche:
-````
-python3 -m pip install numpy yt-dlp
-````
-
-### ffmpeg Download   
-
-Wenn diese beiden Module installiert sind, fehlt nur noch ffmpeg. Auf macOS und Linux ist der Download ziemlich einfach. 
-Gehe dazu ins Terminal und gebe folgenden Befehl ein:  
-````
+Auf macOS / Linux mit Paketmanager:
+```
 [paketmanager] install ffmpeg
-````
+```
+z. B. `brew install ffmpeg` oder `sudo apt install ffmpeg`.
 
-Auf Windows ist der Download von *ffmpeg* etwas umständlicher
-
-Dafür musst du erstmal von der ffmpeg Seite die [ffmpeg-release-essentials.zip](https://www.gyan.dev/ffmpeg/builds/) herunterladen. Wenn du das erledigt hast, führe folgende Schritte durch:
-  1. Datei entpacken, in den Ordner 'bin/' navigieren und dessen Pfad-Link kopieren.
-  2. Öffne die Einstellungen &rarr; System &rarr; erweiterte Systemeinstellungen
+Auf Windows ist der Download von *ffmpeg* etwas umständlicher.
+Lade dir dafür von der ffmpeg-Seite die [ffmpeg-release-essentials.zip](https://www.gyan.dev/ffmpeg/builds/) herunter und führe folgende Schritte durch:
+  1. Datei entpacken, in den Ordner `bin/` navigieren und dessen Pfad-Link kopieren.
+  2. Öffne die Einstellungen → System → erweiterte Systemeinstellungen
   3. Klicke auf Umgebungsvariable
-  4. Bearbeite die Variable PATH &rarr; Neu &rarr; füge kopierten Pfad ein
+  4. Bearbeite die Variable PATH → Neu → füge den kopierten Pfad ein
 
-Um zu testen ob alles geklappt hat, öffne Powershell und gib folgendes ein:
+Test in PowerShell:
 ```
 ffmpeg -version
 ```
-Wenn alles geklappt hat, siehtst du die installierte Version.
 
 
-# Programm ausführen
+## Programm ausführen
 
-Auf Windows reicht es auf die *main_win.exe* Datei eine Doppel-Klick zu machen. Dadurch öffnet sich automatisch ein neues Terminal-Fenster und du kannst wie oben beschrieben fortfahren.
+### Bare Metal (ohne venv-Aktivierung)
 
-Auf macOS musst du ein neues Terminal-Fenster öffnen und in den Pfad navigieren, in dem die Datei *main* gespeichert ist. Danach führst du folgenden Befehl aus, um das Programm zu starten:
-````
+Sobald `yt-dlp` und `ffmpeg` system-weit installiert sind, kann das Skript direkt mit dem System-Python aufgerufen werden – ohne dass vorher eine virtuelle Umgebung aktiviert werden muss:
+
+```
+python3 main.py
+```
+
+oder direkt ausführbar (macOS/Linux):
+
+```
+./main.py
+```
+
+### Vorgebaute Binaries
+
+Auf Windows reicht es, auf die *main_win.exe* Datei doppelt zu klicken. Es öffnet sich automatisch ein Terminal-Fenster.
+
+Auf macOS/Linux öffnest du ein Terminal, navigierst in den Pfad mit der Datei *main* und führst aus:
+```
 ./main
-````
+```
 
+### Selber bauen
 
-Falls du das Programm selber bauen möchtest, zum Beispiel um nach einem Code-Update die neueste Version zu haben, kannst du es mit folgendem Befehl tun. 
-````
+Wenn du das Programm nach einem Code-Update neu bauen möchtest:
+```
 pyinstaller -F --console main.py
-````
-
-> main.py oder main_win.py je nach Platform
+```
 
 
+## Projektstruktur
+
+```
+YT-Downloader/
+├── main.py                       # Einstiegspunkt (mp3/mp4 + URL abfragen)
+├── downloader/
+│   ├── __init__.py
+│   ├── utils.py                  # geteilte yt-dlp Optionen + Titel-Cleaner
+│   ├── mp3_downloader.py
+│   └── mp4_downloader.py
+├── requirements.txt
+├── Programme/                    # vorgebaute Binaries (macOS/Linux + Windows)
+└── README.md
+```
+
+
+Ich hoffe das Programm hilft dir, die ganzen mp3/mp4 Downloader mit Werbungen und Pop-ups zu umgehen.
 
 Autor:
 Melih Erbas
