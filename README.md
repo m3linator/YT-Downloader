@@ -1,3 +1,7 @@
+**Sprache / Language:** 🇩🇪 Deutsch | [🇬🇧 English](README.en.md) | [🇫🇷 Français](README.fr.md) | [🇹🇷 Türkçe](README.tr.md) | [🇨🇳 中文](README.zh.md)
+
+---
+
 # YT-Downloader
 Ein Programm, mit dem man Videos und Audios von YouTube herunterladen kann.
 
