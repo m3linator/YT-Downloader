@@ -5,8 +5,20 @@
 # YT-Downloader
 YouTube'dan video ve ses indirmeye yarayan bir program.
 
-Program zaten önceden derlenmiş olup `Programme/` klasöründen indirilebilir.
+Program zaten önceden derlenmiş olup **[Release](https://github.com/m3linator/YT-Downloader/releases/latest)** olarak indirilebilir.
 *main* macOS ve Linux ile, *main_win.exe* ise Windows ile uyumludur.
+
+
+## İndirme
+
+En son sürümü doğrudan **[Releases sayfasından](https://github.com/m3linator/YT-Downloader/releases/latest)** indirin:
+
+| Dosya | Platform |
+|-------|----------|
+| `main` | macOS / Linux |
+| `main_win.exe` | Windows |
+
+İkili dosyalar bağımsızdır — Python kurulumuna gerek yoktur. Yalnızca `ffmpeg` ayrıca kurulmalıdır (bkz. [Gereksinimler](#gereksinimler)).
 
 
 ## Programın Özellikleri

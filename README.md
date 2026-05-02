@@ -5,8 +5,20 @@
 # YT-Downloader
 Ein Programm, mit dem man Videos und Audios von YouTube herunterladen kann.
 
-Das Programm ist bereits fertig gebaut und kann im Ordner `Programme/` heruntergeladen werden.
+Das Programm ist bereits fertig gebaut und steht als **[Release](https://github.com/m3linator/YT-Downloader/releases/latest)** zum Download bereit.
 *main* ist kompatibel mit macOS und Linux und *main_win.exe* mit Windows.
+
+
+## Download
+
+Die neueste Version gibt es direkt auf der **[Releases-Seite](https://github.com/m3linator/YT-Downloader/releases/latest)**:
+
+| Datei | Plattform |
+|-------|-----------|
+| `main` | macOS / Linux |
+| `main_win.exe` | Windows |
+
+Die Binaries sind eigenständig – kein Python nötig. Nur `ffmpeg` muss separat installiert werden (siehe [Anforderungen](#anforderungen)).
 
 
 ## Was das Programm kann

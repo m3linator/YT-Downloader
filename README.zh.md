@@ -5,8 +5,20 @@
 # YT-Downloader
 一个从 YouTube 下载视频和音频的程序。
 
-程序已预先编译，可在 `Programme/` 文件夹中下载。
+程序已预先编译，可作为 **[Release](https://github.com/m3linator/YT-Downloader/releases/latest)** 直接下载。
 *main* 兼容 macOS 和 Linux，*main_win.exe* 兼容 Windows。
+
+
+## 下载
+
+从 **[Releases 页面](https://github.com/m3linator/YT-Downloader/releases/latest)** 获取最新版本：
+
+| 文件 | 平台 |
+|------|------|
+| `main` | macOS / Linux |
+| `main_win.exe` | Windows |
+
+二进制文件独立运行，无需安装 Python。只需单独安装 `ffmpeg`（见[环境要求](#环境要求)）。
 
 
 ## 程序功能
