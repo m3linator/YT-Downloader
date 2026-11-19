@@ -1,1 +1,6 @@
-yt-dlp>=2025.10.0
+# [default] installiert u.a. yt-dlp-ejs (JS-Challenge-Solver für YouTube).
+# Ohne ihn liefert YouTube HTTP 403. Zusätzlich nötig: deno + ffmpeg.
+yt-dlp[default]>=2026.10.26
+
+# Tests
+pytest>=8.0
