@@ -1,24 +1,23 @@
-from yt_dlp import YoutubeDL
+"""
+@file mp3_downloader.py
+@brief Audio-Download als .mp3.
+"""
 
-from .utils import CleanTitlePP, base_ydl_opts
+from __future__ import annotations
+
+from .core import download
+from .playlist import DownloadReport
+from .utils import base_ydl_opts
 
 
-def mp3_downloader(url):
+def mp3_options(outtmpl: str | None = None) -> dict:
     """
-    Lädt nur Audio von einer YouTube-URL als .mp3 herunter.
-
-    Funktioniert sowohl für einzelne Videos als auch für komplette
-    Playlists. Bei Playlists werden die Dateien in der YouTube-Reihenfolge
-    nummeriert ("01 - <Titel>.mp3", "02 - ..." etc.). Nicht mehr verfügbare
-    Videos einer Playlist werden übersprungen, ohne dass der Vorgang
-    abbricht. Altersbeschränkte Videos werden ohne Login heruntergeladen.
-
-    Der Künstlername sowie Tags wie "Official Audio", "HD" usw. werden
-    aus dem Dateinamen entfernt; ein "(feat. ...)"-Hinweis bleibt erhalten.
+    @brief yt-dlp Optionen für bestes Audio, konvertiert zu mp3 (192 kbit/s).
+    @param outtmpl Dateinamen-Vorlage.
+    @return Options-Dictionary.
     """
-
-    ydl_opts = base_ydl_opts()
-    ydl_opts.update(
+    opts = base_ydl_opts(outtmpl)
+    opts.update(
         {
             "format": "bestaudio/best",
             "postprocessors": [
@@ -26,12 +25,22 @@ def mp3_downloader(url):
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
                     "preferredquality": "192",
-                }
+                },
             ],
         }
     )
+    return opts
 
-    with YoutubeDL(ydl_opts) as ydl:
-        # Postprocessor zum Säubern des Titels VOR der Dateinamenserzeugung.
-        ydl.add_post_processor(CleanTitlePP(keep_features=True), when="pre_process")
-        ydl.download([url])
+
+def mp3_downloader(url: str, *, whole_playlist: bool = False) -> DownloadReport:
+    """
+    @brief Lädt nur das Audio einer YouTube-URL (oder einer ganzen Playlist) als .mp3.
+
+    Der Künstlername sowie Tags wie "Official Audio", "HD" usw. werden
+    aus dem Dateinamen entfernt; ein "(feat. ...)"-Hinweis bleibt erhalten.
+
+    @param url YouTube-URL.
+    @param whole_playlist True = ganze Playlist parallel laden.
+    @return Bericht über den Download.
+    """
+    return download(url, mp3_options, keep_features=True, whole_playlist=whole_playlist)
