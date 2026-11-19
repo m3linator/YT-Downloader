@@ -3,130 +3,190 @@
 ---
 
 # YT-Downloader
-Ein Programm, mit dem man Videos und Audios von YouTube herunterladen kann.
-
-Das Programm ist bereits fertig gebaut und steht als **[Release](https://github.com/m3linator/YT-Downloader/releases/latest)** zum Download bereit.
-*main* ist kompatibel mit macOS und Linux und *main_win.exe* mit Windows.
+Ein Kommandozeilen-Programm, mit dem man Videos (mp4) und Audios (mp3) von YouTube herunterladen kann – ohne Werbung und Pop-ups.
 
 
 ## Download
 
-Die neueste Version gibt es direkt auf der **[Releases-Seite](https://github.com/m3linator/YT-Downloader/releases/latest)**:
+Vorgebaute Versionen gibt es auf der **[Releases-Seite](https://github.com/m3linator/YT-Downloader/releases/latest)**:
 
 | Datei | Plattform |
 |-------|-----------|
 | `main` | macOS / Linux |
 | `main_win.exe` | Windows |
 
-Die Binaries sind eigenständig – kein Python nötig. Nur `ffmpeg` muss separat installiert werden (siehe [Anforderungen](#anforderungen)).
+> **Hinweis:** Die Binaries von v1.0.0 enthalten eine veraltete yt-dlp-Version und scheitern bei vielen Videos mit `HTTP Error 403`. Bis zu einem neuen Release das Programm bitte [aus dem Quellcode starten](#programm-ausführen).
 
 
 ## Was das Programm kann
 
-Wenn man das Programm startet, wird einem die Auswahl zwischen mp3 und mp4 angeboten. Durch simples Eingeben wird die Auswahl gespeichert. Begriffe wie *Sound, Audio, Stimme, Video und Film* werden ebenfalls akzeptiert.
-Danach muss man nur noch den Link vom gewünschten YouTube-Video einfügen und der Download beginnt.
+Beim Start fragt das Programm nach dem Format: **mp3** oder **mp4**. Begriffe wie *Sound, Audio, Stimme, Video und Film* werden ebenfalls akzeptiert. Danach den Link einfügen – der Download beginnt.
 
-Zusätzliche Features:
+Features:
 
-* **Playlists werden in Reihenfolge nummeriert.** Hängt man einen Playlist-Link rein, werden die Dateien in der exakten YouTube-Reihenfolge mit zweistelligem Präfix benannt, z. B. `01 - <Titel>.mp3`, `02 - <Titel>.mp3` ...
-* **Altersbeschränkte / „explizite" Videos** (z. B. einige Rap-Songs) werden ohne Login heruntergeladen.
-* **Saubere Dateinamen.** Künstler-Präfixe und Tags wie *Official Audio*, *Official Video*, *HD*, *Lyrics Video* etc. werden automatisch aus dem Dateinamen entfernt. Bei mp3-Downloads bleibt ein eventuelles `(feat. ...)` erhalten.
-* **Robust gegen tote Videos.** Nicht mehr verfügbare oder regional gesperrte Videos einer Playlist werden stillschweigend übersprungen, sodass der Download nicht abbricht.
+* **Playlist-Abfrage.** Ist ein Video Teil einer Playlist (`watch?v=...&list=...`), fragt das Programm nach:
+  ```
+  Der Link gehört zu einer Playlist.
+    [1] Nur dieses Video (Standard)
+    [2] Ganze Playlist
+  ```
+  Ein reiner Playlist-Link (`playlist?list=...`) lädt direkt die ganze Playlist.
+* **Parallele Playlist-Downloads.** Playlists werden mit bis zu 4 Videos gleichzeitig geladen (gemessen: 4 Videos in 9,8 s statt 25 s). Einzelvideos sind davon nicht betroffen.
+* **Nummerierung in YouTube-Reihenfolge.** Playlist-Dateien heißen `01 - <Titel>.mp3`, `02 - <Titel>.mp3` … (ab 100 Videos dreistellig).
+* **Metadaten und Cover in mp3s.** Titel, Künstler und Datum werden als Tags gespeichert, das Video-Thumbnail wird als Cover eingebettet – sichtbar in Apple Music, Spotify (lokale Dateien), VLC usw.
+* **Saubere Dateinamen.** Künstler-Präfixe und Tags wie *Official Audio*, *Official Video*, *HD*, *Lyrics Video* werden entfernt. Bei mp3 bleibt ein `(feat. ...)` erhalten.
+* **Altersbeschränkte Videos** werden – soweit YouTube es ohne Login erlaubt – heruntergeladen.
+* **Ehrliche Statusmeldung.** Die Erfolgsmeldung erscheint nur, wenn der Download wirklich geklappt hat. Andernfalls listet das Programm die fehlgeschlagenen Videos auf und beendet sich mit Exit-Code `1`. Tote Videos in einer Playlist stoppen den Rest nicht.
 
-Alle Dateien landen im Standard-Downloads-Ordner deines Benutzers.
+Alle Dateien landen im Downloads-Ordner deines Benutzers (`~/Downloads`).
 
 
 ## Anforderungen
 
-Es wird nur ein Modul + `ffmpeg` benötigt:
+| Abhängigkeit | Wofür |
+|--------------|-------|
+| Python ≥ 3.10 | Ausführen des Programms |
+| `yt-dlp[default]` | Download; das Extra `[default]` installiert u. a. `yt-dlp-ejs` |
+| `deno` | JavaScript-Laufzeit, mit der `yt-dlp-ejs` die YouTube-Challenge löst |
+| `ffmpeg` | mp3-Konvertierung, Zusammenführen von Video + Audio, Cover-Einbettung |
 
-* `yt-dlp`
-* `ffmpeg`
+> **Warum `deno` und `yt-dlp-ejs`?** YouTube schützt seine Download-Links mit einer JavaScript-Challenge. Ohne Lösung antwortet YouTube mit `HTTP Error 403: Forbidden`. `deno` ist der Taschenrechner, `yt-dlp-ejs` das Formelblatt – es braucht beides.
 
-Installation von `yt-dlp` (Win/Mac/Linux):
+### Python-Module installieren
+
 ```
-pip install -r requirements.txt
-```
-oder direkt:
-```
-pip install yt-dlp
-```
-Falls das nicht funktioniert:
-```
-python3 -m pip install yt-dlp
+python3 -m pip install -U -r requirements.txt
 ```
 
-### ffmpeg Download
-
-Auf macOS / Linux mit Paketmanager:
+Auf macOS mit Homebrew-Python blockiert pip globale Installationen (PEP 668, Meldung `externally-managed-environment`). Dann ins Benutzerverzeichnis installieren:
 ```
-[paketmanager] install ffmpeg
+python3 -m pip install --user --break-system-packages -U -r requirements.txt
 ```
-z. B. `brew install ffmpeg` oder `sudo apt install ffmpeg`.
 
-Auf Windows ist der Download von *ffmpeg* etwas umständlicher.
-Lade dir dafür von der ffmpeg-Seite die [ffmpeg-release-essentials.zip](https://www.gyan.dev/ffmpeg/builds/) herunter und führe folgende Schritte durch:
-  1. Datei entpacken, in den Ordner `bin/` navigieren und dessen Pfad-Link kopieren.
-  2. Öffne die Einstellungen → System → erweiterte Systemeinstellungen
-  3. Klicke auf Umgebungsvariable
-  4. Bearbeite die Variable PATH → Neu → füge den kopierten Pfad ein
+### deno und ffmpeg installieren
 
-Test in PowerShell:
+macOS:
 ```
+brew install deno ffmpeg
+```
+
+Linux (Debian/Ubuntu):
+```
+sudo apt install ffmpeg
+curl -fsSL https://deno.land/install.sh | sh
+```
+
+Windows (PowerShell):
+```
+winget install DenoLand.Deno
+winget install Gyan.FFmpeg
+```
+
+Alternativ ffmpeg unter Windows manuell: [ffmpeg-release-essentials.zip](https://www.gyan.dev/ffmpeg/builds/) herunterladen, entpacken, den Pfad des Ordners `bin/` zur Umgebungsvariable `PATH` hinzufügen (Einstellungen → System → Erweiterte Systemeinstellungen → Umgebungsvariablen).
+
+Test:
+```
+deno --version
 ffmpeg -version
 ```
 
 
 ## Programm ausführen
 
-### Bare Metal (ohne venv-Aktivierung)
+### Aus dem Quellcode (bare metal)
 
-Sobald `yt-dlp` und `ffmpeg` system-weit installiert sind, kann das Skript direkt mit dem System-Python aufgerufen werden – ohne dass vorher eine virtuelle Umgebung aktiviert werden muss:
-
+Das Programm läuft direkt mit dem System-Python – keine virtuelle Umgebung nötig:
 ```
 python3 main.py
 ```
-
-oder direkt ausführbar (macOS/Linux):
-
+oder (macOS/Linux):
 ```
 ./main.py
 ```
 
+Beispiel:
+```
+mp3 oder mp4: mp3
+Gib die URL von dem YT-Video an:
+https://www.youtube.com/watch?v=...
+...
+1 Datei(en) erfolgreich heruntergeladen!
+Du findest sie im Download-Ordner.
+```
+
 ### Vorgebaute Binaries
 
-Auf Windows reicht es, auf die *main_win.exe* Datei doppelt zu klicken. Es öffnet sich automatisch ein Terminal-Fenster.
-
-Auf macOS/Linux öffnest du ein Terminal, navigierst in den Pfad mit der Datei *main* und führst aus:
-```
-./main
-```
+Windows: Doppelklick auf *main_win.exe*.
+macOS/Linux: Im Terminal in den Ordner mit *main* wechseln und `./main` ausführen.
+`deno` und `ffmpeg` müssen auch hier installiert sein.
 
 ### Selber bauen
 
-Wenn du das Programm nach einem Code-Update neu bauen möchtest:
 ```
-pyinstaller -F --console main.py
+python3 -m pip install --user pyinstaller
+pyinstaller -F --console --collect-data yt_dlp_ejs main.py
 ```
+`--collect-data yt_dlp_ejs` packt die Solver-Skripte mit in die Binary. Das Ergebnis liegt in `dist/`.
+
+
+## Tests
+
+Die Unit-Tests laufen ohne Netzwerk (yt-dlp wird durch Test-Doubles ersetzt):
+```
+python3 -m pytest -q
+```
+
+
+## Fehlerbehebung
+
+| Meldung | Ursache | Lösung |
+|---------|---------|--------|
+| `HTTP Error 403: Forbidden` / `n challenge solving failed` | yt-dlp veraltet oder `yt-dlp-ejs` / `deno` fehlt | `python3 -m pip install -U "yt-dlp[default]"` und `deno` installieren |
+| `Fehler: 'yt-dlp' ist nicht installiert.` | Modul fehlt im verwendeten Python | Siehe [Python-Module installieren](#python-module-installieren) |
+| `ffmpeg not found` | ffmpeg nicht im `PATH` | Siehe [deno und ffmpeg installieren](#deno-und-ffmpeg-installieren) |
+| `externally-managed-environment` | Homebrew-Python schützt sich (PEP 668) | `--user --break-system-packages` verwenden |
+
+YouTube ändert sich ständig – bei neuen Fehlern hilft fast immer ein Update von yt-dlp.
 
 
 ## Projektstruktur
 
 ```
 YT-Downloader/
-├── main.py                       # Einstiegspunkt (mp3/mp4 + URL abfragen)
+├── main.py                  # Einstiegspunkt: Format, URL, Playlist-Abfrage, Statusmeldung
 ├── downloader/
 │   ├── __init__.py
-│   ├── utils.py                  # geteilte yt-dlp Optionen + Titel-Cleaner
-│   ├── mp3_downloader.py
-│   └── mp4_downloader.py
+│   ├── core.py              # gemeinsame Download-Steuerung (Einzelvideo vs. Playlist)
+│   ├── playlist.py          # Playlist-Erkennung, Auslesen, paralleler Download
+│   ├── utils.py             # yt-dlp Basis-Optionen, Dateinamen-Vorlage, Titel-Säuberung
+│   ├── mp3_downloader.py    # mp3-Optionen (Konvertierung, Metadaten, Cover)
+│   └── mp4_downloader.py    # mp4-Optionen (bestes Video + Audio)
+├── tests/                   # pytest Unit-Tests (ohne Netzwerk)
+├── Programme/               # vorgebaute Binaries (macOS/Linux + Windows)
 ├── requirements.txt
-├── Programme/                    # vorgebaute Binaries (macOS/Linux + Windows)
-└── README.md
+└── README.md (+ en, fr, tr, zh)
 ```
 
+Ablauf: `main.py` → `mp3_downloader` / `vid_download` → `core.download` → bei Einzelvideo `download_one`, bei Playlist `fetch_entries` + `download_parallel`.
 
-Ich hoffe das Programm hilft dir, die ganzen mp3/mp4 Downloader mit Werbungen und Pop-ups zu umgehen.
+
+Ich hoffe, das Programm hilft dir, die ganzen mp3/mp4-Downloader mit Werbung und Pop-ups zu umgehen.
 
 Autor:
 Melih Erbas
+
+
+## Releases
+
+### Unveröffentlicht
+* **Behoben:** `HTTP Error 403` bei YouTube – `yt-dlp[default]` (inkl. JS-Challenge-Solver) und `deno` werden vorausgesetzt.
+* **Behoben:** Erfolgsmeldung erschien auch bei fehlgeschlagenem Download.
+* **Neu:** Abfrage „nur dieses Video / ganze Playlist“ bei Videos innerhalb einer Playlist.
+* **Neu:** Parallele Playlist-Downloads (bis zu 4 gleichzeitig).
+* **Neu:** Metadaten und Cover in mp3-Dateien.
+* **Schneller:** Keine erzwungenen Player-Clients mehr (weniger Requests).
+* **Entfernt:** venv-Fallback – das Programm läuft bare metal.
+* **Neu:** Unit-Tests mit pytest.
+
+### [v1.0.0](https://github.com/m3linator/YT-Downloader/releases/tag/v1.0.0)
+* Erste Version: mp3/mp4-Download, Playlist-Nummerierung, saubere Dateinamen, vorgebaute Binaries für macOS/Linux und Windows.

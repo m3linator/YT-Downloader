@@ -1,132 +1,194 @@
-**Langue :** [🇩🇪 Deutsch](README.md) | [🇬🇧 English](README.en.md) | 🇫🇷 Français | [🇹🇷 Türkçe](README.tr.md) | [🇨🇳 中文](README.zh.md)
+**Sprache / Language:** [🇩🇪 Deutsch](README.md) | [🇬🇧 English](README.en.md) | 🇫🇷 Français | [🇹🇷 Türkçe](README.tr.md) | [🇨🇳 中文](README.zh.md)
 
 ---
 
 # YT-Downloader
-Un programme pour télécharger des vidéos et de l'audio depuis YouTube.
+Un programme en ligne de commande pour télécharger des vidéos (mp4) et de l'audio (mp3) depuis YouTube – sans publicités ni pop-ups.
 
-Le programme est déjà pré-compilé et disponible en tant que **[Release](https://github.com/m3linator/YT-Downloader/releases/latest)**.
-*main* est compatible avec macOS et Linux, et *main_win.exe* avec Windows.
+> Les invites du programme sont en allemand.
 
 
 ## Téléchargement
 
-Obtenez la dernière version directement depuis la **[page Releases](https://github.com/m3linator/YT-Downloader/releases/latest)** :
+Des versions pré-compilées sont disponibles sur la **[page des Releases](https://github.com/m3linator/YT-Downloader/releases/latest)** :
 
 | Fichier | Plateforme |
 |---------|------------|
 | `main` | macOS / Linux |
 | `main_win.exe` | Windows |
 
-Les binaires sont autonomes — aucune installation de Python requise. Seul `ffmpeg` doit être installé séparément (voir [Prérequis](#prérequis)).
+> **Remarque :** Les binaires de la v1.0.0 contiennent une version obsolète de yt-dlp et échouent sur de nombreuses vidéos avec `HTTP Error 403`. En attendant une nouvelle release, veuillez [lancer le programme depuis le code source](#exécuter-le-programme).
 
 
 ## Ce que le programme peut faire
 
-Au démarrage, le programme vous propose de choisir entre mp3 et mp4. Il suffit de taper votre choix pour le valider. Des termes comme *son, audio, voix, vidéo* et *film* sont également acceptés.
-Ensuite, il ne reste plus qu'à coller le lien de la vidéo YouTube souhaitée et le téléchargement commence.
+Au démarrage, le programme demande le format : **mp3** ou **mp4**. Les mots *Sound, Audio, Stimme, Video et Film* sont également acceptés. Collez ensuite le lien – le téléchargement commence.
 
-Fonctionnalités supplémentaires :
+Fonctionnalités :
 
-* **Les playlists sont numérotées dans l'ordre.** En collant un lien de playlist, les fichiers sont nommés dans l'ordre exact de YouTube avec un préfixe à deux chiffres, p. ex. `01 - <titre>.mp3`, `02 - <titre>.mp3` …
-* **Les vidéos avec restriction d'âge / « explicites »** (p. ex. certains morceaux de rap) sont téléchargées sans connexion requise.
-* **Noms de fichiers propres.** Les préfixes d'artiste et les balises telles que *Official Audio*, *Official Video*, *HD*, *Lyrics Video*, etc. sont automatiquement supprimés du nom de fichier. Pour les téléchargements mp3, un éventuel `(feat. ...)` est conservé.
-* **Robuste face aux vidéos indisponibles.** Les vidéos d'une playlist qui ne sont plus disponibles ou sont bloquées géographiquement sont silencieusement ignorées afin que le téléchargement ne s'interrompe pas.
+* **Question sur la playlist.** Si une vidéo fait partie d'une playlist (`watch?v=...&list=...`), le programme demande :
+  ```
+  Der Link gehört zu einer Playlist.
+    [1] Nur dieses Video (Standard)     -> uniquement cette vidéo (par défaut)
+    [2] Ganze Playlist                  -> toute la playlist
+  ```
+  Un lien de playlist pur (`playlist?list=...`) télécharge directement toute la playlist.
+* **Téléchargements de playlists en parallèle.** Jusqu'à 4 vidéos sont téléchargées simultanément (mesuré : 4 vidéos en 9,8 s au lieu de 25 s). Les vidéos individuelles ne sont pas concernées.
+* **Numérotation dans l'ordre de YouTube.** Les fichiers d'une playlist sont nommés `01 - <titre>.mp3`, `02 - <titre>.mp3` … (trois chiffres à partir de 100 vidéos).
+* **Métadonnées et pochette dans les mp3.** Le titre, l'artiste et la date sont enregistrés comme tags, et la miniature de la vidéo est intégrée comme pochette – visible dans Apple Music, Spotify (fichiers locaux), VLC, etc.
+* **Noms de fichiers propres.** Les préfixes d'artiste et les tags comme *Official Audio*, *Official Video*, *HD*, *Lyrics Video* sont supprimés. Pour les mp3, un `(feat. ...)` est conservé.
+* **Les vidéos soumises à une limite d'âge** sont téléchargées dans la mesure où YouTube le permet sans connexion.
+* **Message de statut honnête.** Le message de succès n'apparaît que si le téléchargement a réellement réussi. Sinon, le programme liste les vidéos en échec et se termine avec le code `1`. Les vidéos mortes d'une playlist n'arrêtent pas le reste.
 
-Tous les fichiers sont enregistrés dans le dossier Téléchargements standard de votre compte utilisateur.
+Tous les fichiers sont enregistrés dans le dossier Téléchargements de votre utilisateur (`~/Downloads`).
 
 
 ## Prérequis
 
-Un seul module + `ffmpeg` est nécessaire :
+| Dépendance | Rôle |
+|------------|------|
+| Python ≥ 3.10 | Exécution du programme |
+| `yt-dlp[default]` | Téléchargement ; l'extra `[default]` installe notamment `yt-dlp-ejs` |
+| `deno` | Environnement JavaScript utilisé par `yt-dlp-ejs` pour résoudre le challenge de YouTube |
+| `ffmpeg` | Conversion mp3, fusion vidéo + audio, intégration de la pochette |
 
-* `yt-dlp`
-* `ffmpeg`
+> **Pourquoi `deno` et `yt-dlp-ejs` ?** YouTube protège ses liens de téléchargement par un challenge JavaScript. S'il n'est pas résolu, YouTube répond par `HTTP Error 403: Forbidden`. `deno` est la calculatrice, `yt-dlp-ejs` la fiche de formules – il faut les deux.
 
-Installation de `yt-dlp` (Win/Mac/Linux) :
+### Installer les modules Python
+
 ```
-pip install -r requirements.txt
-```
-ou directement :
-```
-pip install yt-dlp
-```
-Si cela ne fonctionne pas :
-```
-python3 -m pip install yt-dlp
+python3 -m pip install -U -r requirements.txt
 ```
 
-### Téléchargement de ffmpeg
-
-Sur macOS / Linux avec un gestionnaire de paquets :
+Sur macOS avec le Python de Homebrew, pip bloque les installations globales (PEP 668, message `externally-managed-environment`). Installez alors dans votre répertoire utilisateur :
 ```
-[gestionnaire-de-paquets] install ffmpeg
+python3 -m pip install --user --break-system-packages -U -r requirements.txt
 ```
-p. ex. `brew install ffmpeg` ou `sudo apt install ffmpeg`.
 
-Sur Windows, l'installation de *ffmpeg* est un peu plus fastidieuse.
-Téléchargez [ffmpeg-release-essentials.zip](https://www.gyan.dev/ffmpeg/builds/) depuis le site de ffmpeg et suivez ces étapes :
-  1. Décompressez le fichier, naviguez dans le dossier `bin/` et copiez son chemin.
-  2. Ouvrez Paramètres → Système → Paramètres système avancés.
-  3. Cliquez sur Variables d'environnement.
-  4. Modifiez la variable PATH → Nouveau → collez le chemin copié.
+### Installer deno et ffmpeg
 
-Test dans PowerShell :
+macOS :
 ```
+brew install deno ffmpeg
+```
+
+Linux (Debian/Ubuntu) :
+```
+sudo apt install ffmpeg
+curl -fsSL https://deno.land/install.sh | sh
+```
+
+Windows (PowerShell) :
+```
+winget install DenoLand.Deno
+winget install Gyan.FFmpeg
+```
+
+Alternative pour ffmpeg sous Windows : téléchargez [ffmpeg-release-essentials.zip](https://www.gyan.dev/ffmpeg/builds/), décompressez-le et ajoutez le chemin du dossier `bin/` à la variable d'environnement `PATH` (Paramètres → Système → Paramètres système avancés → Variables d'environnement).
+
+Test :
+```
+deno --version
 ffmpeg -version
 ```
 
 
 ## Exécuter le programme
 
-### Bare Metal (sans activation de venv)
+### Depuis le code source (bare metal)
 
-Une fois `yt-dlp` et `ffmpeg` installés à l'échelle du système, le script peut être lancé directement avec le Python système — sans avoir à activer un environnement virtuel au préalable :
-
+Le programme s'exécute directement avec le Python du système – aucun environnement virtuel nécessaire :
 ```
 python3 main.py
 ```
-
-ou directement exécutable (macOS/Linux) :
-
+ou (macOS/Linux) :
 ```
 ./main.py
 ```
 
+Exemple :
+```
+mp3 oder mp4: mp3
+Gib die URL von dem YT-Video an:
+https://www.youtube.com/watch?v=...
+...
+1 Datei(en) erfolgreich heruntergeladen!
+Du findest sie im Download-Ordner.
+```
+
 ### Binaires pré-compilés
 
-Sur Windows, il suffit de double-cliquer sur le fichier *main_win.exe*. Une fenêtre de terminal s'ouvre automatiquement.
-
-Sur macOS/Linux, ouvrez un terminal, naviguez jusqu'au dossier contenant *main* et exécutez :
-```
-./main
-```
+Windows : double-cliquez sur *main_win.exe*.
+macOS/Linux : dans un terminal, allez dans le dossier contenant *main* et exécutez `./main`.
+`deno` et `ffmpeg` doivent également être installés.
 
 ### Compiler soi-même
 
-Si vous souhaitez recompiler le programme après une mise à jour du code :
 ```
-pyinstaller -F --console main.py
+python3 -m pip install --user pyinstaller
+pyinstaller -F --console --collect-data yt_dlp_ejs main.py
 ```
+`--collect-data yt_dlp_ejs` intègre les scripts du solveur dans le binaire. Le résultat se trouve dans `dist/`.
+
+
+## Tests
+
+Les tests unitaires s'exécutent sans accès réseau (yt-dlp est remplacé par des doublures de test) :
+```
+python3 -m pytest -q
+```
+
+
+## Dépannage
+
+| Message | Cause | Solution |
+|---------|-------|----------|
+| `HTTP Error 403: Forbidden` / `n challenge solving failed` | yt-dlp obsolète, ou `yt-dlp-ejs` / `deno` manquant | `python3 -m pip install -U "yt-dlp[default]"` et installer `deno` |
+| `Fehler: 'yt-dlp' ist nicht installiert.` | Module absent du Python utilisé | Voir [Installer les modules Python](#installer-les-modules-python) |
+| `ffmpeg not found` | ffmpeg absent du `PATH` | Voir [Installer deno et ffmpeg](#installer-deno-et-ffmpeg) |
+| `externally-managed-environment` | Le Python de Homebrew se protège (PEP 668) | Utiliser `--user --break-system-packages` |
+
+YouTube change constamment – en cas de nouvelle erreur, mettre à jour yt-dlp aide presque toujours.
 
 
 ## Structure du projet
 
 ```
 YT-Downloader/
-├── main.py                       # Point d'entrée (choix mp3/mp4 + URL)
+├── main.py                  # Point d'entrée : format, URL, question playlist, message de statut
 ├── downloader/
 │   ├── __init__.py
-│   ├── utils.py                  # options yt-dlp partagées + nettoyeur de titres
-│   ├── mp3_downloader.py
-│   └── mp4_downloader.py
+│   ├── core.py              # pilotage commun du téléchargement (vidéo seule vs. playlist)
+│   ├── playlist.py          # détection de playlist, lecture, téléchargement parallèle
+│   ├── utils.py             # options de base yt-dlp, modèle de nom de fichier, nettoyage des titres
+│   ├── mp3_downloader.py    # options mp3 (conversion, métadonnées, pochette)
+│   └── mp4_downloader.py    # options mp4 (meilleure vidéo + audio)
+├── tests/                   # tests unitaires pytest (sans réseau)
+├── Programme/               # binaires pré-compilés (macOS/Linux + Windows)
 ├── requirements.txt
-├── Programme/                    # binaires pré-compilés (macOS/Linux + Windows)
-└── README.md
+└── README.md (+ en, fr, tr, zh)
 ```
 
+Déroulement : `main.py` → `mp3_downloader` / `vid_download` → `core.download` → pour une vidéo seule `download_one`, pour une playlist `fetch_entries` + `download_parallel`.
 
-J'espère que ce programme vous aidera à éviter tous ces téléchargeurs mp3/mp4 remplis de publicités et de pop-ups.
+
+J'espère que ce programme t'aidera à éviter tous ces téléchargeurs mp3/mp4 remplis de publicités et de pop-ups.
 
 Auteur :
 Melih Erbas
+
+
+## Releases
+
+### Non publié
+* **Corrigé :** `HTTP Error 403` sur YouTube – `yt-dlp[default]` (avec le solveur de challenge JS) et `deno` sont désormais requis.
+* **Corrigé :** Le message de succès s'affichait même en cas d'échec.
+* **Nouveau :** Question « uniquement cette vidéo / toute la playlist » pour les vidéos d'une playlist.
+* **Nouveau :** Téléchargements de playlists en parallèle (jusqu'à 4 simultanément).
+* **Nouveau :** Métadonnées et pochette dans les fichiers mp3.
+* **Plus rapide :** Plus de clients de lecture imposés (moins de requêtes).
+* **Supprimé :** Repli sur venv – le programme s'exécute en bare metal.
+* **Nouveau :** Tests unitaires avec pytest.
+
+### [v1.0.0](https://github.com/m3linator/YT-Downloader/releases/tag/v1.0.0)
+* Première version : téléchargement mp3/mp4, numérotation des playlists, noms de fichiers propres, binaires pré-compilés pour macOS/Linux et Windows.
