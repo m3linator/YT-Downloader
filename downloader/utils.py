@@ -2,12 +2,13 @@
 Gemeinsame Hilfsfunktionen für den YT-Downloader.
 
 Hier liegt alles, was sowohl der mp3- als auch der mp4-Downloader teilen:
-  * Standard-Optionen für yt-dlp (Speicherort, Playlist-Nummerierung,
-    Überspringen nicht verfügbarer Videos, Umgehung der Altersbeschränkung)
+  * Standard-Optionen für yt-dlp (Speicherort, Dateinamen-Vorlage,
+    Überspringen nicht verfügbarer Videos)
   * Eine Funktion zum Säubern der Videotitel (Künstler-Präfix sowie Tags
     wie "Official Audio", "HD" etc. werden entfernt)
   * Ein eigener yt-dlp Postprocessor, der den Titel vor dem Erstellen
-    des Dateinamens anpasst, sodass die Datei direkt richtig benannt wird.
+    des Dateinamens anpasst, sodass die Datei direkt richtig benannt wird,
+    und den Künstler für die Metadaten übernimmt.
 """
 
 from __future__ import annotations
@@ -73,6 +74,18 @@ def _strip_decorative_blocks(title: str, *, keep_features: bool) -> str:
     return title
 
 
+def split_artist(title: str) -> tuple[str | None, str]:
+    """
+    @brief Trennt "Künstler - Titel" am ersten Trennzeichen auf.
+    @param title Originaltitel des Videos.
+    @return (Künstler, Rest) oder (None, title), falls kein Trenner existiert.
+    """
+    parts = _ARTIST_SEP_RE.split(title, maxsplit=1)
+    if len(parts) == 2:
+        return parts[0].strip(), parts[1]
+    return None, title
+
+
 def clean_title(title: str, *, keep_features: bool = False) -> str:
     """
     Säubert einen YouTube-Titel.
@@ -87,9 +100,7 @@ def clean_title(title: str, *, keep_features: bool = False) -> str:
         return title
 
     # 1. Künstler-Präfix entfernen (nur am ersten Trenner aufteilen)
-    parts = _ARTIST_SEP_RE.split(title, maxsplit=1)
-    if len(parts) == 2:
-        title = parts[1]
+    _, title = split_artist(title)
 
     # 2. Werbe-Tags entfernen
     title = _strip_decorative_blocks(title, keep_features=keep_features)
@@ -128,8 +139,11 @@ class CleanTitlePP(PostProcessor):
     """
     yt-dlp Postprocessor, der vor dem Download (im ``pre_process``-Schritt)
     den Titel säubert. Da yt-dlp den Dateinamen aus ``info['title']``
-    aufbaut, ist der heruntergeladene Datei direkt korrekt benannt – wir
+    aufbaut, ist die heruntergeladene Datei direkt korrekt benannt – wir
     sparen uns ein nachträgliches Umbenennen.
+
+    Liefert YouTube keinen Künstler, wird er aus "Künstler - Titel"
+    übernommen, damit die eingebetteten Metadaten stimmen.
     """
 
     def __init__(self, downloader=None, *, keep_features: bool = False):
@@ -138,6 +152,9 @@ class CleanTitlePP(PostProcessor):
 
     def run(self, info):
         original = info.get("title") or ""
+        artist, _ = split_artist(original)
+        if artist and not info.get("artist"):
+            info["artist"] = artist
         cleaned = clean_title(original, keep_features=self.keep_features)
         if cleaned and cleaned != original:
             info["title"] = cleaned
@@ -145,52 +162,42 @@ class CleanTitlePP(PostProcessor):
 
 
 def get_download_dir() -> Path:
-    """Standard-Speicherort: der Downloads-Ordner des Benutzers."""
+    """
+    @brief Standard-Speicherort: der Downloads-Ordner des Benutzers.
+    @return Pfad zu ~/Downloads.
+    """
     return Path.home() / "Downloads"
 
 
-def base_ydl_opts() -> dict:
+def build_outtmpl(index: int | None = None, width: int = 2) -> str:
     """
-    Gemeinsame yt-dlp Optionen für mp3- und mp4-Downloads.
-
-    Enthält:
-      * Speicherort + Vorlage mit optionaler "01 - "-Nummerierung,
-        falls eine Playlist heruntergeladen wird.
-      * ``ignoreerrors`` damit nicht verfügbare Videos in einer Playlist
-        einfach übersprungen werden.
-      * Umgehung der YouTube-Altersbeschränkung über alternative
-        Player-Clients (kein Login nötig).
+    @brief Baut die yt-dlp Dateinamen-Vorlage.
+    @param index Position in der Playlist (1-basiert) oder None für Einzelvideos.
+    @param width Mindestanzahl Ziffern der Nummerierung ("01", "001", ...).
+    @return Vorlage wie "~/Downloads/03 - %(title)s.%(ext)s".
     """
-    download_dir = get_download_dir()
+    prefix = f"{index:0{width}d} - " if index is not None else ""
+    return str(get_download_dir() / f"{prefix}%(title)s.%(ext)s")
 
-    # %(playlist_index&CONSEQUENT|ALTERNATE)s ist die yt-dlp-Konditional-
-    # syntax: existiert ein playlist_index, wird "01 - " vorangestellt,
-    # ansonsten bleibt die Datei einfach "<Titel>.<ext>".
-    outtmpl = str(download_dir / "%(playlist_index&{0:02d} - |)s%(title)s.%(ext)s")
 
+def base_ydl_opts(outtmpl: str | None = None) -> dict:
+    """
+    @brief Gemeinsame yt-dlp Optionen für mp3- und mp4-Downloads.
+
+    Bewusst wird KEIN ``player_client`` erzwungen: yt-dlp wählt die je
+    Version funktionierenden Clients selbst. Feste Clients wie
+    ``tv_simply`` kosten zusätzliche Requests und werden ohne PO-Token
+    ohnehin übersprungen.
+
+    @param outtmpl Eigene Dateinamen-Vorlage; Standard: build_outtmpl().
+    @return Options-Dictionary für ``YoutubeDL``.
+    """
     return {
-        "outtmpl": outtmpl,
-        # Playlist-Indizes garantiert konsistent zur YouTube-Reihenfolge.
-        "playlist_items": None,
-        # Nicht verfügbare / gelöschte / regional gesperrte Videos überspringen.
+        "outtmpl": outtmpl or build_outtmpl(),
+        # Fehler melden, aber nicht abbrechen. Ob alles geklappt hat,
+        # verrät der Rückgabewert von ``YoutubeDL.download``.
         "ignoreerrors": True,
-        # Alters-Beschränkung umgehen: hohe Grenze + mehrere Player-Clients
-        # als Fallback. ``default`` lässt yt-dlp die jeweils aktuell besten
-        # Clients wählen (das ändert sich mit jeder yt-dlp Version, da
-        # YouTube seine Endpoints regelmäßig dichtmacht). ``tv_simply`` und
-        # ``web_embedded`` sind die zuverlässigen Fallbacks für altersbe-
-        # schränkte Inhalte ohne Login.
-        # WICHTIG: Sollte der Fehler "YouTube is no longer supported in
-        # this application or device" auftreten, ist meistens yt-dlp zu
-        # alt – mit ``./venv/bin/pip install -U yt-dlp`` aktualisieren.
         "age_limit": 99,
-        "extractor_args": {
-            "youtube": {
-                "player_client": ["default", "tv_simply", "web_embedded"],
-            }
-        },
-        # Bei Playlists einen kompakten Statusausdruck behalten.
-        "noprogress": False,
-        "quiet": False,
-        "no_warnings": False,
+        # Fragmentierte Formate (DASH/HLS) parallel laden.
+        "concurrent_fragment_downloads": 4,
     }
